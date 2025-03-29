@@ -209,16 +209,13 @@ const Home = () => {
                 whileHover={{ scale: 1.05, backgroundColor: '#2563eb' }} 
                 whileTap={{ scale: 0.95 }} 
                 className="cta-button"
+                onClick={() => {
+                  console.log("Button Tapped");
+                }}
               >
                 Get Started <ArrowRight size={20} style={{ marginLeft: '10px' }} />
               </motion.button>
-              <motion.button 
-                whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.1)' }} 
-                whileTap={{ scale: 0.95 }} 
-                className="cta-secondary-button"
-              >
-                <Play size={18} style={{ marginRight: '8px' }} /> Watch Demo
-              </motion.button>
+              
             </motion.div>
           </motion.div>
         </div>

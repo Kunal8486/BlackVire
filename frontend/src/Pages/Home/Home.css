@@ -31,7 +31,7 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/img/bg.jpg');
+  background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/img/bgm.gif');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -102,9 +102,12 @@
 
 .cta-button {
   background-color: var(--accent-blue);
+  align-items: center;
+  justify-content: center;
   color: white;
   padding: 0.875rem 1.75rem;
   border: none;
+  max-width: 200px;
   border-radius: 50px;
   font-weight: 600;
   font-size: 1rem;

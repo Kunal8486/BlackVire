@@ -58,7 +58,7 @@
   }
   
   .footer-logo {
-    height: 100px;
+    height: 140px;
     width: auto;
     margin-bottom: 1rem;
     transition: transform var(--transition-speed) ease;
