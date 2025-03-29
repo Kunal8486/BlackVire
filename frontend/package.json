@@ -15,8 +15,10 @@
     "chart.js": "^4.4.8",
     "framer-motion": "^12.6.2",
     "lucide-react": "^0.484.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "lucide-vue-next": "^0.485.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.4.1",
     "recharts": "^2.15.1"
   },
   "devDependencies": {
