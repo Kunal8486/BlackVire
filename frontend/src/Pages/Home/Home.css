@@ -1,17 +1,4 @@
-:root {
-  --bg-dark: #121212;
-  --bg-dark-light: #1e1e1e;
-  --bg-dark-lighter: #282828;
-  --text-primary: #ffffff;
-  --text-secondary: #b0b0b0;
-  --accent-blue: #3b82f6;
-  --accent-green: #10b981;
-  --accent-purple: #8b5cf6;
-  --accent-red: #ef4444;
-  --accent-yellow: #eab308;
-  --accent-indigo: #6366f1;
-  --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
+
 
 .home-container {
   min-height: 100vh;

@@ -1,10 +1,4 @@
-:root {
-  --glow-color: rgba(52, 152, 219, 0.7);
-  --accent-color: rgb(52, 152, 219);
-  --accent-hover: rgba(52, 152, 219, 0.2);
-  --text-primary: #ffffff;
-  --transition-speed: 0.3s;
-}
+
 
 .blackvire-navbar {
   position: fixed;
@@ -201,12 +195,17 @@
 }
 
 .profile-avatar {
-  width: 40px;
-  height: 40px;
+  width: 40px !important;
+  height: 40px !important;
   border-radius: 50%;
   object-fit: cover;
 }
-
+.profile-avatar-small {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50%;
+  object-fit: cover;
+}
 .profile-info h4 {
   margin: 0;
   font-size: 0.95rem;
@@ -331,4 +330,22 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.login-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  background-color: #3498db; /* Or your theme primary color */
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.login-btn:hover {
+  background-color: #2980b9; /* Darker shade for hover */
 }

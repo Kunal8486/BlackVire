@@ -1,149 +1,137 @@
+:root {
+    --bg-dark: #121212;
+    --bg-dark-light: #1e1e1e;
+    --bg-dark-lighter: #282828;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --accent-blue: #3b82f6;
+    --accent-green: #10b981;
+    --accent-hover: rgba(52, 152, 219, 0.2);
+    --accent-color: rgb(52, 152, 219);
+    --accent-purple: #8b5cf6;
+    --accent-red: #ef4444;
+    --accent-yellow: #eab308;
+    --glow-color: rgba(52, 152, 219, 0.7);
+    --accent-indigo: #6366f1;
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 
-
-/* Loading Spinner */
-.loading-spinner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 50vh;
-  gap: 1.5rem;
-}
-
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 3px solid rgba(52, 152, 219, 0.1);
-  border-radius: 50%;
-  border-top-color: var(--accent-color);
-  animation: spin 1s ease-in-out infinite;
-  box-shadow: 0 0 15px var(--accent-glow);
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+    --transition-speed: 0.3s;
+    --footer-bg: rgb(10, 15, 30);
+    --footer-accent: rgb(52, 152, 219);
+    --footer-text: #ffffff;
+    --footer-muted: rgba(255, 255, 255, 0.7);
+    --footer-border: rgba(255, 255, 255, 0.1);
   }
-}
 
-/* Glowing dots background effect */
-.app::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: radial-gradient(rgba(52, 152, 219, 0.15) 1px, transparent 1px);
-  background-size: 50px 50px;
-  z-index: -1;
-  opacity: 0.3;
-  pointer-events: none;
-}
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--accent-color);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #2980b9;
-}
-
-/* Typography defaults */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  line-height: 1.2;
-  margin-bottom: 1rem;
-  color: var(--text-primary);
-}
-
-h1 {
-  font-size: 2.5rem;
-}
-
-h2 {
-  font-size: 2rem;
-}
-
-h3 {
-  font-size: 1.5rem;
-}
-
-p {
-  margin-bottom: 1rem;
-}
-
-a {
-  color: var(--accent-color);
-  text-decoration: none;
-  transition: color var(--transition-speed) ease;
-}
-
-a:hover {
-  color: #2980b9;
-}
-
-/* Button defaults */
-button {
-  cursor: pointer;
-  font-family: inherit;
-}
-
-/* Card component base styling */
-.card {
-  background-color: var(--bg-secondary);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .app-content {
-    padding-left: 1rem;
-    padding-right: 1rem;
+  :root {
+    --bg-color: #0a0a0a;
+    --card-bg: #111111;
+    --error-color: #ff3e3e;
+    --border-color: #2a2a2a;
+    --input-bg: #1a1a1a;
   }
   
-  h1 {
-    font-size: 2rem;
+  :root {
+    /* Color Palette */
+    --bg-primary: #121212;
+    --bg-secondary: #1E1E1E;
+    --text-primary: #FFFFFF;
+    --text-secondary: #B0B0B0;
+    
+    /* Accent Colors */
+    --accent-primary: #e2e2e2;  /* Reddish-pink */
+    --accent-secondary: #f9f9f9;  /* Softer reddish-pink */
+    
+  
+    /* Semantic Colors */
+    --success-color: #4CAF50;
+    --warning-color: #FFC107;
+    --error-color: #F44336;
+  }
+
+/* Spinner for global app loading */
+.app-loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #0a0a0a;
+    z-index: 9999;
   }
   
-  h2 {
-    font-size: 1.75rem;
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(0, 230, 150, 0.2);
+    border-radius: 50%;
+    border-top-color: #00e696;
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 20px;
   }
   
-  h3 {
-    font-size: 1.25rem;
+  .app-loading p {
+    color: #a0a0a0;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    font-weight: 500;
   }
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
+  
+  /* Animation for spinner rotation */
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
-  to {
-    opacity: 1;
+  
+  /* Loading spinner for content areas */
+  .loading-spinner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    min-height: 300px;
+    width: 100%;
+    padding: 2rem;
   }
-}
-
-.page-transition {
-  animation: fadeIn 0.4s ease-in-out;
-}
+  
+  .loading-spinner .spinner {
+    width: 40px;
+    height: 40px;
+    border-width: 4px;
+  }
+  
+  .loading-spinner p {
+    margin-top: 15px;
+    color: #888;
+    font-size: 16px;
+  }
+  
+  /* Pulse animation for additional visual interest */
+  @keyframes pulse {
+    0% {
+      opacity: 0.6;
+      transform: scale(0.98);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0.6;
+      transform: scale(0.98);
+    }
+  }
+  
+  /* Apply pulsing animation to the loading text */
+  .app-loading p,
+  .loading-spinner p,
+  .auth-loading p {
+    animation: pulse 1.5s ease-in-out infinite;
+  }

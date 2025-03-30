@@ -1,12 +1,4 @@
-/* Footer.css */
-:root {
-    --footer-bg: rgb(10, 15, 30);
-    --footer-accent: rgb(52, 152, 219);
-    --footer-text: #ffffff;
-    --footer-muted: rgba(255, 255, 255, 0.7);
-    --footer-border: rgba(255, 255, 255, 0.1);
-    --transition-speed: 0.3s;
-  }
+
   
   @keyframes glow-pulse {
     0% { opacity: 0.7; }

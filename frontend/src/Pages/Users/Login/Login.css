@@ -1,0 +1,485 @@
+/* LoginPage.css */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Primary Colors */
+  --bg-dark: #121212;
+  --bg-dark-light: #1e1e1e;
+  --bg-dark-lighter: #282828;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  
+  /* Accent Colors */
+  --accent-blue: #3b82f6;
+  --accent-green: #10b981;
+  --accent-hover: rgba(52, 152, 219, 0.2);
+  --accent-color: rgb(52, 152, 219);
+  --accent-purple: #8b5cf6;
+  --accent-red: #ef4444;
+  --accent-yellow: #eab308;
+  --accent-indigo: #6366f1;
+  
+  /* Special Effects */
+  --glow-color: rgba(52, 152, 219, 0.7);
+  --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --transition-speed: 0.3s;
+  
+  /* Container Backgrounds */
+  --bg-color: #0a0a0a;
+  --card-bg: #111111;
+  --error-color: #ff3e3e;
+  --border-color: #2a2a2a;
+  --input-bg: #1a1a1a;
+  
+  /* Footer */
+  --footer-bg: rgb(10, 15, 30);
+  --footer-accent: rgb(52, 152, 219);
+  --footer-text: #ffffff;
+  --footer-muted: rgba(255, 255, 255, 0.7);
+  --footer-border: rgba(255, 255, 255, 0.1);
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg-dark);
+}
+
+.particles-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.login-card {
+  width: 100%;
+  margin-top: 100px;
+  max-width: 420px;
+  background-color: var(--card-bg);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo-text {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: linear-gradient(45deg, var(--text-primary), var(--accent-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+}
+
+.logo-underline {
+  height: 3px;
+  width: 40px;
+  background: var(--accent-color);
+  margin: 8px auto 0;
+  border-radius: 3px;
+}
+
+h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 16px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 5px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 16px;
+  transition: all 0.3s;
+  position: relative;
+  z-index: 1;
+}
+
+.input-group label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  transition: all 0.3s;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.input-group.focused label {
+  top: 0;
+  left: 12px;
+  font-size: 12px;
+  padding: 0 4px;
+  background-color: var(--input-bg);
+  color: var(--accent-color);
+}
+
+.input-group input:focus {
+  border-color: var(--accent-color);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-hover);
+}
+
+.input-highlight {
+  display: none;
+}
+
+.input-group.focused .input-highlight {
+  width: calc(100% - 2px);
+}
+
+.options-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.custom-checkbox {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  display: inline-block;
+  transition: all 0.2s;
+}
+
+.checkbox-container input:checked ~ .custom-checkbox {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.custom-checkbox:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-container input:checked ~ .custom-checkbox:after {
+  display: block;
+}
+
+.forgot-link {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+.login-button {
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  background-color: var(--accent-color);
+  color: black;
+  font-weight: 500;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02);
+}
+
+.login-button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.login-button.loading {
+  background-color: var(--accent-hover);
+  color: transparent;
+}
+
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(0, 0, 0, 0.2);
+  border-top-color: black;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.or-divider {
+  display: flex;
+  align-items: center;
+  margin: 25px 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.or-divider:before,
+.or-divider:after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--border-color);
+}
+
+.or-divider span {
+  padding: 0 15px;
+}
+
+.social-login {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.social-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background-color: var(--input-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.social-button:hover {
+  border-color: var(--accent-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.social-icon {
+  width: 24px;
+  height: 24px;
+  background-size: cover;
+}
+
+.google-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff' d='M12 22q-2.05 0-3.9-.788q-1.85-.787-3.175-2.137q-1.325-1.35-2.088-3.175Q2 14.075 2 12t.788-3.9q.787-1.85 2.137-3.175q1.35-1.325 3.175-2.088Q9.925 2 12 2q2.05 0 3.9.788q1.85.787 3.175 2.137q1.325 1.35 2.087 3.175Q22 9.925 22 12q0 2.05-.788 3.9q-.787 1.85-2.137 3.175q-1.35 1.325-3.175 2.087Q14.075 22 12 22m0-2q3.35 0 5.675-2.325Q20 15.35 20 12q0-3.35-2.325-5.675Q15.35 4 12 4Q8.65 4 6.325 6.325Q4 8.65 4 12q0 3.35 2.325 5.675Q8.65 20 12 20m0-8q0 .825-.588 1.412Q10.825 14 10 14q-.825 0-1.413-.588Q8 12.825 8 12t.587-1.413Q9.175 10 10 10q.825 0 1.412.587Q12 11.175 12 12m8 0q0 .825-.588 1.412Q18.825 14 18 14q-.825 0-1.413-.588Q16 12.825 16 12t.587-1.413Q17.175 10 18 10q.825 0 1.412.587Q20 11.175 20 12z'/%3E%3C/svg%3E");
+}
+
+.github-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff' d='M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33c.85 0 1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2Z'/%3E%3C/svg%3E");
+}
+
+.twitter-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff' d='M22.46 6c-.77.35-1.6.58-2.46.69c.88-.53 1.56-1.37 1.88-2.38c-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29c0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15c0 1.49.75 2.81 1.91 3.56c-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07a4.28 4.28 0 0 0 4 2.98a8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21C16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56c.84-.6 1.56-1.36 2.14-2.23Z'/%3E%3C/svg%3E");
+}
+
+.signup-prompt {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.signup-prompt a {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.signup-prompt a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 30px 20px;
+  }
+  
+  h1 {
+    font-size: 24px;
+  }
+  
+  .subtitle {
+    font-size: 14px;
+  }
+}
+
+/* Animation for inputs */
+@keyframes focusIn {
+  0% { width: 0; opacity: 0; }
+  100% { width: 100%; opacity: 1; }
+}
+
+.input-group input:focus ~ .input-highlight {
+  animation: focusIn 0.3s forwards;
+}
+
+/* Progress bar styling */
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background-color: var(--border-color);
+  border-radius: 2px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--accent-color);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Button styles */
+.back-button {
+  padding: 16px;
+  flex: 1;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background-color: transparent;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.back-button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Enhanced focus effects */
+.input-group input:focus {
+  box-shadow: 0 0 0 3px var(--accent-hover), 0 0 0 1px var(--accent-color);
+}
+
+/* Cool glow effect on login button */
+.login-button:hover {
+  box-shadow: 0 0 15px var(--glow-color);
+}
+
+/* Particle system colors */
+.particle {
+  background-color: var(--accent-color);
+  opacity: 0.5;
+}
+
+
+
+/* Add this to your LoginPage.css file */
+
+/* Password input wrapper styling */
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Toggle password button styling */
+.toggle-password {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 8px;
+  z-index: 2;
+  transition: all 0.2s;
+}
+
+.toggle-password:hover {
+  color: var(--accent-color);
+}
+
+/* Ensure password input leaves space for the toggle button */
+.password-input-wrapper input {
+  padding-right: 70px;
+}
+
+/* Remove any redundant animations for simplicity while maintaining appearance */
+.input-group.focused .input-highlight {
+  width: calc(100% - 2px);
+}

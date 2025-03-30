@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { Activity, Shield, Radar, BarChart2, Server, Zap, ArrowRight, CheckCircle, Play, Users, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
 import './Home.css';
 
 const Home = () => {
@@ -16,8 +18,17 @@ const Home = () => {
   const featuresInView = useInView(featuresRef, { once: false, threshold: 0.2 });
   const statsInView = useInView(statsRef, { once: false, threshold: 0.2 });
   const testimonialInView = useInView(testimonialRef, { once: false, threshold: 0.2 });
+
+
+
   const ctaInView = useInView(ctaRef, { once: false, threshold: 0.2 });
 
+  const navigate = useNavigate();
+
+
+  const handleStarted = () => {
+    navigate('/register');
+  };
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -209,9 +220,8 @@ const Home = () => {
                 whileHover={{ scale: 1.05, backgroundColor: '#2563eb' }} 
                 whileTap={{ scale: 0.95 }} 
                 className="cta-button"
-                onClick={() => {
-                  console.log("Button Tapped");
-                }}
+                onClick={handleStarted}
+
               >
                 Get Started <ArrowRight size={20} style={{ marginLeft: '10px' }} />
               </motion.button>

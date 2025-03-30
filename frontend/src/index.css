@@ -1,20 +1,4 @@
-:root {
-  /* Color Palette */
-  --bg-primary: #121212;
-  --bg-secondary: #1E1E1E;
-  --text-primary: #FFFFFF;
-  --text-secondary: #B0B0B0;
-  
-  /* Accent Colors */
-  --accent-primary: #e2e2e2;  /* Reddish-pink */
-  --accent-secondary: #f9f9f9;  /* Softer reddish-pink */
-  
 
-  /* Semantic Colors */
-  --success-color: #4CAF50;
-  --warning-color: #FFC107;
-  --error-color: #F44336;
-}
 
 * {
   margin: 0;
