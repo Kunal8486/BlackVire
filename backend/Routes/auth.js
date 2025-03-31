@@ -420,26 +420,42 @@ router.get('/logout', auth, async (req, res) => {
 });
 
 // Helper function to send verification email
+// Helper function to send verification email
 const sendVerificationEmail = async (email, name, code) => {
   const mailOptions = {
     from: process.env.EMAIL,
     to: email,
     subject: 'Verify your Blackvire account',
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 5px;">
-        <div style="text-align: center; margin-bottom: 20px;">
-          <h1 style="color: #333; margin-bottom: 5px;">BLACKVIRE</h1>
-          <div style="height: 3px; width: 100px; background: linear-gradient(to right, #00e696, #00a8e8); margin: 0 auto;"></div>
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #eaeaea; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <div style="text-align: center; margin-bottom: 25px;">
+          <h1 style="color: #222; margin-bottom: 8px; font-size: 28px; font-weight: 700;">BLACKVIRE</h1>
+          <div style="height: 4px; width: 120px; background: linear-gradient(to right, #00e696, #00a8e8); margin: 0 auto; border-radius: 2px;"></div>
         </div>
-        <h2 style="color: #333;">Hello, ${name}!</h2>
-        <p style="color: #666; line-height: 1.5;">Thank you for registering with Blackvire. Please verify your email address to continue.</p>
-        <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; text-align: center; margin: 20px 0;">
-          <h3 style="margin-top: 0; color: #333;">Your verification code</h3>
-          <div style="font-size: 28px; font-weight: bold; letter-spacing: 5px; color: #00a8e8;">${code}</div>
+        
+        <h2 style="color: #333; font-size: 22px; margin-top: 25px;">Welcome, ${name}!</h2>
+        
+        <p style="color: #555; line-height: 1.6; font-size: 16px;">Thank you for choosing Blackvire. To complete your registration and access all features, please verify your email address using the code below:</p>
+        
+        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; margin: 25px 0; border-left: 4px solid #00a8e8;">
+          <h3 style="margin-top: 0; color: #333; font-size: 18px;">Your Verification Code</h3>
+          <div style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #00a8e8; padding: 10px 0;">${code}</div>
         </div>
-        <p style="color: #666; line-height: 1.5;">This code will expire in 60 minutes. If you didn't request this verification, please ignore this email.</p>
-        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 12px;">
-          <p>© ${new Date().getFullYear()} Blackvire. All rights reserved.</p>
+        
+        <p style="color: #555; line-height: 1.6; font-size: 16px;">This code will expire in <strong>60 minutes</strong>. If you didn't create an account with Blackvire, please disregard this email or contact our support team.</p>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eaeaea;">
+          <p style="color: #555; font-size: 14px;">For security reasons, please:</p>
+          <ul style="color: #555; font-size: 14px;">
+            <li>Never share this code with anyone</li>
+            <li>Verify that you're on the official Blackvire website before entering this code</li>
+            <li>Contact support immediately if you suspect any unauthorized access</li>
+          </ul>
+        </div>
+        
+        <div style="text-align: center; margin-top: 35px; color: #888; font-size: 13px;">
+          <p>If you have any questions, contact us at <a href="mailto:support@blackvire.com" style="color: #00a8e8; text-decoration: none;">support@blackvire.com</a></p>
+          <p style="margin-top: 15px;">© ${new Date().getFullYear()} Blackvire. All rights reserved.</p>
         </div>
       </div>
     `
@@ -504,18 +520,28 @@ router.post("/forgot-password", async (req, res) => {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: user.email,
-      subject: "Password Reset Request",
+      subject: "Password Reset Request for Your Account",
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Password Reset</h2>
-          <p>Click the link below to reset your password:</p>
-          <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none;">
-            Reset Password
-          </a>
-          <p>This link will expire in 1 hour.</p>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://i.ibb.co/RkKQWypc/Black-Vire-Blue.png" alt="Company Logo" style="max-height: 60px;">
+          </div>
+          <h2 style="color: #333; margin-bottom: 15px;">Password Reset Request</h2>
+          <p style="color: #555; line-height: 1.5;">Hello,</p>
+          <p style="color: #555; line-height: 1.5;">We received a request to reset the password for your account. If you didn't make this request, you can safely ignore this email.</p>
+          <div style="margin: 25px 0; text-align: center;">
+            <a href="${resetUrl}" style="display: inline-block; padding: 12px 24px; background-color: #4285F4; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">Reset Your Password</a>
+          </div>
+          <p style="color: #555; line-height: 1.5;">This link will expire in 1 hour for security reasons.</p>
+          <p style="color: #555; line-height: 1.5;">If the button above doesn't work, you can copy and paste this link into your browser:</p>
+          <p style="word-break: break-all; background-color: #f7f7f7; padding: 10px; border-radius: 3px; font-size: 14px;">${resetUrl}</p>
+          <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #e0e0e0; color: #777; font-size: 12px;">
+            <p>If you didn't request this password reset, please contact our support team immediately at ${process.env.SUPPORT_EMAIL || 'support@blackvire.com'}.</p>
+            <p>&copy; ${new Date().getFullYear()} ${process.env.COMPANY_NAME || 'BLACKVIRE'}. All rights reserved.</p>
+          </div>
         </div>
       `
-    }
+    };
 
     // Send email with comprehensive error handling
     try {

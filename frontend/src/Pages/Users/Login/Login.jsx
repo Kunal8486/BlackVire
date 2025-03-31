@@ -614,35 +614,7 @@ const LoginPage = () => {
           </div>
         ) : (
           <>
-            {/* Social login options */}
-            <div className="or-divider">
-              <span>or continue with</span>
-            </div>
-            
-            <div className="social-login">
-              <button 
-                className="social-button" 
-                onClick={() => handleSocialLogin('Google')}
-                aria-label="Sign in with Google"
-              >
-                <i className="social-icon google-icon" aria-hidden="true"></i>
-              </button>
-              <button 
-                className="social-button" 
-                onClick={() => handleSocialLogin('GitHub')}
-                aria-label="Sign in with GitHub"
-              >
-                <i className="social-icon github-icon" aria-hidden="true"></i>
-              </button>
-              <button 
-                className="social-button" 
-                onClick={() => handleSocialLogin('Twitter')}
-                aria-label="Sign in with Twitter"
-              >
-                <i className="social-icon twitter-icon" aria-hidden="true"></i>
-              </button>
-            </div>
-            
+           
             <p className="signup-prompt">
               Don't have an account? <a href="/register">Create account</a>
             </p>

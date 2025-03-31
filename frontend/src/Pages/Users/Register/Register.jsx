@@ -743,7 +743,7 @@ const RegistrationPage = () => {
                   aria-describedby={fieldErrors.verificationCode ? "verificationCodeError" : undefined}
                   required
                 />
-                <label htmlFor="verificationCode">Verification Code</label>
+                <label className='vfcode' htmlFor="verificationCode">Verification Code</label>
                 <span className="input-highlight"></span>
                 {fieldErrors.verificationCode && (
                   <div className="field-error" id="verificationCodeError" role="alert">
@@ -953,34 +953,7 @@ const RegistrationPage = () => {
           </div>
         ) : (
           <>
-            {/* Social login options */}
-            <div className="or-divider">
-              <span>or sign up with</span>
-            </div>
-  
-            <div className="social-login">
-              <button 
-                className="social-button" 
-                onClick={() => handleSocialLogin('Google')}
-                aria-label="Sign up with Google"
-              >
-                <i className="social-icon google-icon" aria-hidden="true"></i>
-              </button>
-              <button 
-                className="social-button" 
-                onClick={() => handleSocialLogin('GitHub')}
-                aria-label="Sign up with GitHub"
-              >
-                <i className="social-icon github-icon" aria-hidden="true"></i>
-              </button>
-              <button 
-                className="social-button" 
-                onClick={() => handleSocialLogin('Twitter')}
-                aria-label="Sign up with Twitter"
-              >
-                <i className="social-icon twitter-icon" aria-hidden="true"></i>
-              </button>
-            </div>
+            
   
             <p className="signup-prompt">
               Already have an account? <a href="/login">Sign in</a>
