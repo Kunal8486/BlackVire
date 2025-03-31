@@ -52,6 +52,26 @@ const UserSchema = new mongoose.Schema(
       required: [true, 'You must agree to terms and privacy policy'],
       default: false,
     },
+    isVerified: {
+      type: Boolean,
+      default: false
+    },
+    verificationCode: {
+      type: String,
+      select: false
+    },
+    verificationExpires: {
+      type: Date,
+      select: false
+    },
+    resetPasswordToken: {
+      type: String,
+      select: false
+    },
+    resetPasswordExpire: {
+      type: Date,
+      select: false
+    },
     registrationDate: {
       type: Date,
       default: Date.now,
