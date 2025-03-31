@@ -448,4 +448,130 @@ const sendVerificationEmail = async (email, name, code) => {
   return transporter.sendMail(mailOptions);
 };
 
+
+
+
+// Middleware to validate email
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
+// Middleware for error handling
+const handleError = (res, error, customMessage = "Server error") => {
+  console.error(`❌ ${customMessage}:`, error)
+  return res.status(500).json({ 
+    message: customMessage, 
+    error: error.message || error 
+  })
+}
+
+
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body
+    
+    // Validate email format
+    if (!validateEmail(email)) {
+      return res.status(400).json({ message: "Invalid email format" })
+    }
+
+    // Find user with proper error handling
+    const user = await User.findOne({ email }).exec()
+    if (!user) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
+    // Generate tokens with stronger randomness
+    const token = crypto.randomBytes(64).toString("hex")
+    const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { 
+      expiresIn: "1h" 
+    })
+
+    // Update user with reset tokens
+    user.resetPasswordToken = token
+    user.resetPasswordExpires = Date.now() + 3600000
+    
+    // Save with error handling
+    try {
+      await user.save()
+    } catch (saveError) {
+      return handleError(res, saveError, "Failed to save reset token")
+    }
+
+    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: "Password Reset Request",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Password Reset</h2>
+          <p>Click the link below to reset your password:</p>
+          <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none;">
+            Reset Password
+          </a>
+          <p>This link will expire in 1 hour.</p>
+        </div>
+      `
+    }
+
+    // Send email with comprehensive error handling
+    try {
+      await transporter.sendMail(mailOptions)
+      res.json({ message: "Reset link sent to your email" })
+    } catch (emailError) {
+      return handleError(res, emailError, "Failed to send reset email")
+    }
+  } catch (error) {
+    handleError(res, error)
+  }
+})
+
+router.post("/reset-password/:token", async (req, res) => {
+  try {
+    const { token } = req.params
+    const { newPassword } = req.body
+
+    // Validate password strength
+    if (newPassword.length < 8) {
+      return res.status(400).json({ 
+        message: "Password must be at least 8 characters long" 
+      })
+    }
+
+    // Verify token with error handling
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET)
+    } catch (tokenError) {
+      return res.status(400).json({ message: "Invalid or expired token" })
+    }
+
+    // Find user with proper query
+    const user = await User.findById(decoded.id).exec()
+    if (!user) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
+    
+    // Update user password
+    user.password = newPassword
+    user.resetPasswordToken = undefined
+    user.resetPasswordExpires = undefined
+
+    // Save with error handling
+    try {
+      await user.save()
+      res.json({ message: "Password reset successful" })
+    } catch (saveError) {
+      return handleError(res, saveError, "Failed to update password")
+    }
+  } catch (error) {
+    handleError(res, error)
+  }
+})
+
+
 module.exports = router;

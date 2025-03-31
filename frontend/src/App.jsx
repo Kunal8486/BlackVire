@@ -6,6 +6,8 @@ import Home from "./Pages/Home/Home";
 import Dashboard from "./Pages/Dashboard/Dashboard";
 import Login from "./Pages/Users/Login/Login";
 import Register from "./Pages/Users/Register/Register";
+import ForgetPassword from "./Pages/Users/ResetPassword/ForgetPassword";
+import ResetPassword from "./Pages/Users/ResetPassword/ResetPassword";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
 import Profile from "./Pages/Users/Profile/Profile";
 import "./App.css";
@@ -141,6 +143,8 @@ const App = () => {
               {/* Public Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgetPassword />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
               <Route path="/" element={<Home />} />
 
               {/* Protected Routes */}
