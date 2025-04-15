@@ -1,0 +1,81 @@
+.security-scan-page {
+    max-width: 800px;
+    margin: auto;
+    padding: 2rem;
+    text-align: center;
+    color: #fff;
+  }
+  
+  .page-title {
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .description {
+    margin: 1rem 0;
+    color: #ccc;
+  }
+  
+  .scan-button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .scan-button.scanning {
+    background-color: #2563eb;
+    cursor: not-allowed;
+  }
+  
+  .scan-button:hover:not(:disabled) {
+    background-color: #2563eb;
+  }
+  
+  .icon {
+    vertical-align: middle;
+  }
+  
+  .spin {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .scan-error {
+    color: #f87171;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .scan-results {
+    margin-top: 2rem;
+    text-align: left;
+    background-color: #1f2937;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+  }
+  
+  .scan-placeholder {
+    margin-top: 2rem;
+    color: #94a3b8;
+  }
+  

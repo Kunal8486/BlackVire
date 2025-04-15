@@ -1,9 +1,18 @@
 // pages/Dashboard/Dashboard.jsx
 import React from 'react';
 import { LineChart, DollarSign, Users, Shield, Bell } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
 import './Dashboard.css';
 
 const Dashboard = () => {
+  const navigate = useNavigate(); // Initialize navigate function
+
+  const handleRunScanClick = () => {
+    // Redirect to the security scan page
+    navigate('/security-scan'); // Adjust this route to match your app's routing structure
+  };
+
   return (
     <div className="dashboard page-transition">
       <header className="page-header">
@@ -12,7 +21,7 @@ const Dashboard = () => {
           <p className="header-description">Welcome back! Here's an overview of your security status.</p>
         </div>
         <div className="header-actions">
-          <button className="action-button">
+          <button className="action-button" onClick={handleRunScanClick}>
             <Shield size={16} />
             <span>Run Security Scan</span>
           </button>
@@ -76,7 +85,7 @@ const Dashboard = () => {
             <button className="card-action">View All</button>
           </div>
           <div className="activity-list">
-            {[
+            {[ 
               { type: 'alert', message: 'Unusual login attempt detected', time: '10 minutes ago', status: 'critical' },
               { type: 'update', message: 'System updated to version 2.4.0', time: '1 hour ago', status: 'info' },
               { type: 'alert', message: 'Firewall rule updated', time: '3 hours ago', status: 'warning' },
