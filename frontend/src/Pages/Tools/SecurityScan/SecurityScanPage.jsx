@@ -5,6 +5,7 @@ import {
   HelpCircle, Info, Server, Clock, Scan, Shield, 
   Zap, ChevronRight, ExternalLink
 } from 'lucide-react';
+import './SecurityScanPage.css';
 
 const SecurityScanPage = () => {
   const [isScanning, setIsScanning] = useState(false);
