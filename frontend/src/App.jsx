@@ -11,6 +11,8 @@ import ForgetPassword from "./Pages/Users/ResetPassword/ForgetPassword";
 import ResetPassword from "./Pages/Users/ResetPassword/ResetPassword";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
 import Profile from "./Pages/Users/Profile/Profile";
+import SecurityScanner from "./Pages/Tools/SecurityScanner/SecurityScanner";
+
 import "./App.css";
 
 // Create auth context
@@ -165,6 +167,15 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
+              <Route 
+                path="/security-scanner" 
+                element={
+                  <ProtectedRoute>
+                    <SecurityScanner />
+                  </ProtectedRoute>
+                }
+              />
+              
               <Route 
                 path="/profile" 
                 element={
