@@ -164,7 +164,7 @@ const Navbar = () => {
   const userAvatar = user?.profilePicture || null;
   
   // Default avatar if none is provided
-  const defaultAvatar = "http://localhost:5100/uploads/default-profile-pic.jpg";
+  // const defaultAvatar = "http://localhost:5100/uploads/default-profile-pic.jpg";
 
   // Check if user should be considered logged in (from auth context)
   const hasToken = Boolean(localStorage.getItem('token'));
@@ -222,7 +222,7 @@ const Navbar = () => {
                   onClick={toggleProfile}
                   aria-label="User Profile"
                 >
-                  {userAvatar ? (
+                  {/* {userAvatar ? (
                     <img 
                       src={userAvatar} 
                       alt={displayName} 
@@ -234,13 +234,13 @@ const Navbar = () => {
                     />
                   ) : (
                     <User size={20} />
-                  )}
+                  )} */}
                 </button>
                 
                 {isProfileOpen && (
                   <div className="profile-dropdown">
                     <div className="profile-header">
-                      <img 
+                      {/* <img 
                         src={userAvatar || defaultAvatar} 
                         alt={displayName} 
                         className="profile-avatar"
@@ -248,7 +248,7 @@ const Navbar = () => {
                           e.target.onerror = null;
                           e.target.src = defaultAvatar;
                         }}
-                      />
+                      /> */}
                       <div className="profile-info">
                         <h4>{displayName}</h4>
                         <p>{userRole}</p>

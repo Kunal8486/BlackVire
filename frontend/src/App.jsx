@@ -13,6 +13,7 @@ import ResetPassword from "./Pages/Users/ResetPassword/ResetPassword";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
 import Profile from "./Pages/Users/Profile/Profile";
 import SecurityScanner from "./Pages/Tools/SecurityScanner/SecurityScanner";
+import NetworkStressPage from "./Pages/Tools/NetworkStress/NetworkStressPage";
 
 import "./App.css";
 
@@ -176,7 +177,14 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
-              
+              <Route
+                path="/stress-test"
+                element={
+                  <ProtectedRoute>
+                    <NetworkStressPage />
+                  </ProtectedRoute>
+                }
+              />
               <Route 
                 path="/profile" 
                 element={
