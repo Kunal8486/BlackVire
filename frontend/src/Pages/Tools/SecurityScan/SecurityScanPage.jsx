@@ -157,22 +157,22 @@ const SecurityScanPage = () => {
   };
 
   const renderSeverityBadge = (severity) => {
-    const severityColors = {
-      low: 'bg-blue-500/20 text-blue-400 border-blue-500/50',
-      medium: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50',
-      high: 'bg-orange-500/20 text-orange-400 border-orange-500/50',
-      critical: 'bg-red-600/20 text-red-400 border-red-600/50'
+    const severityClasses = {
+      low: 'severity-badge severity-low',
+      medium: 'severity-badge severity-medium',
+      high: 'severity-badge severity-high',
+      critical: 'severity-badge severity-critical'
     };
 
     const severityIcons = {
-      low: <Info className="w-3 h-3 mr-1.5" />,
-      medium: <AlertCircle className="w-3 h-3 mr-1.5" />,
-      high: <AlertTriangle className="w-3 h-3 mr-1.5" />,
-      critical: <Zap className="w-3 h-3 mr-1.5" />
+      low: <Info className="badge-icon" />,
+      medium: <AlertCircle className="badge-icon" />,
+      high: <AlertTriangle className="badge-icon" />,
+      critical: <Zap className="badge-icon" />
     };
 
     return (
-      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${severityColors[severity] || 'bg-gray-500/20 text-gray-400 border-gray-500/50'} transition-colors`}>
+      <span className={`${severityClasses[severity] || 'severity-badge severity-default'}`}>
         {severityIcons[severity]}
         {severity.charAt(0).toUpperCase() + severity.slice(1)}
       </span>
@@ -180,54 +180,54 @@ const SecurityScanPage = () => {
   };
 
   const getProgressColor = () => {
-    if (scanProgress < 30) return 'from-blue-600 to-blue-500';
-    if (scanProgress < 60) return 'from-blue-500 to-blue-400';
-    if (scanProgress < 90) return 'from-blue-400 to-blue-300';
-    return 'from-green-500 to-green-400';
+    if (scanProgress < 30) return 'progress-blue-high';
+    if (scanProgress < 60) return 'progress-blue-medium';
+    if (scanProgress < 90) return 'progress-blue-low';
+    return 'progress-green';
   };
 
   const getThreatLevelColor = (level) => {
     const colors = {
-      low: 'text-blue-400',
-      medium: 'text-yellow-400',
-      high: 'text-orange-500',
-      critical: 'text-red-500',
-      none: 'text-green-400'
+      low: 'text-blue',
+      medium: 'text-yellow',
+      high: 'text-orange',
+      critical: 'text-red',
+      none: 'text-green'
     };
-    return colors[level?.toLowerCase()] || 'text-gray-400';
+    return colors[level?.toLowerCase()] || 'text-gray';
   };
 
   const getThreatLevelBg = (level) => {
     const colors = {
-      low: 'bg-blue-500/10',
-      medium: 'bg-yellow-500/10',
-      high: 'bg-orange-500/10',
-      critical: 'bg-red-500/10',
-      none: 'bg-green-500/10'
+      low: 'bg-blue-light',
+      medium: 'bg-yellow-light',
+      high: 'bg-orange-light',
+      critical: 'bg-red-light',
+      none: 'bg-green-light'
     };
-    return colors[level?.toLowerCase()] || 'bg-gray-500/10';
+    return colors[level?.toLowerCase()] || 'bg-gray-light';
   };
 
   const ScanTypeCard = ({ type, icon, title, description, timeEstimate, selected, onClick }) => (
     <div 
       onClick={onClick}
-      className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${selected ? 'border-blue-500 bg-blue-500/10' : 'border-gray-700 hover:border-gray-600 bg-gray-800/50'}`}
+      className={`scan-type-card ${selected ? 'scan-type-selected' : 'scan-type-default'}`}
     >
-      <div className="flex items-start space-x-3">
-        <div className={`p-2 rounded-lg ${selected ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-700 text-gray-400'}`}>
+      <div className="scan-type-content">
+        <div className={`scan-type-icon ${selected ? 'scan-type-icon-selected' : 'scan-type-icon-default'}`}>
           {icon}
         </div>
-        <div className="flex-1">
-          <h3 className="font-medium text-white">{title}</h3>
-          <p className="text-sm text-gray-400 mt-1">{description}</p>
-          <div className="mt-3 flex items-center text-xs text-gray-500">
-            <Clock className="w-3 h-3 mr-1" />
+        <div className="scan-type-details">
+          <h3 className="scan-type-title">{title}</h3>
+          <p className="scan-type-description">{description}</p>
+          <div className="scan-type-time">
+            <Clock className="time-icon" />
             <span>~{timeEstimate}</span>
           </div>
         </div>
         {selected && (
-          <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
-            <Check className="w-3 h-3 text-white" />
+          <div className="scan-type-check">
+            <Check className="check-icon" />
           </div>
         )}
       </div>
@@ -235,50 +235,50 @@ const SecurityScanPage = () => {
   );
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="mb-8 bg-gradient-to-br from-blue-900/30 to-indigo-900/30 p-8 rounded-2xl border border-blue-800/50 shadow-lg">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+    <div className="container">
+      <div className="header-panel">
+        <div className="header-content">
           <div>
-            <h1 className="text-3xl font-bold mb-2 flex items-center text-white">
-              <ShieldCheck className="mr-3 text-blue-400" size={32} /> Security Scan Dashboard
+            <h1 className="page-title">
+              <ShieldCheck className="title-icon" /> Security Scan Dashboard
             </h1>
-            <p className="text-gray-300 max-w-2xl">
+            <p className="page-description">
               Proactively identify vulnerabilities in your systems with comprehensive security scanning.
             </p>
           </div>
-          <div className="flex-shrink-0">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gray-800 border border-gray-700 text-gray-300 text-sm">
-              <Server className="w-4 h-4 mr-2 text-blue-400" />
+          <div>
+            <div className="last-scan-badge">
+              <Server className="badge-icon" />
               Last scan: {scanResult ? new Date(scanResult.timestamp).toLocaleString() : 'Never'}
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col space-y-6">
-          <div className="bg-gray-900/50 p-5 rounded-xl border border-gray-800">
+        <div className="configuration-panel">
+          <div className="config-container">
             <button 
               onClick={() => setShowScanOptions(!showScanOptions)}
-              className="flex items-center text-blue-400 hover:text-blue-300 transition-colors mb-2 group"
+              className="config-toggle"
             >
               {showScanOptions ? (
-                <ChevronUp className="mr-2 transition-transform group-hover:-translate-y-0.5" size={18} />
+                <ChevronUp className="toggle-icon" />
               ) : (
-                <ChevronDown className="mr-2 transition-transform group-hover:translate-y-0.5" size={18} />
+                <ChevronDown className="toggle-icon" />
               )}
-              <span className="font-medium">Scan Configuration</span>
+              <span className="toggle-text">Scan Configuration</span>
             </button>
             
             {showScanOptions && (
-              <div className="mt-4 space-y-6">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-400 mb-3 flex items-center">
-                    <Scan className="w-4 h-4 mr-2 text-blue-400" />
+              <div className="config-options">
+                <div className="option-section">
+                  <h3 className="option-title">
+                    <Scan className="option-icon" />
                     Scan Type
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="scan-types-grid">
                     <ScanTypeCard
                       type="quick"
-                      icon={<Zap className="w-5 h-5" />}
+                      icon={<Zap />}
                       title="Quick Scan"
                       description="Basic vulnerability check"
                       timeEstimate="5 minutes"
@@ -287,7 +287,7 @@ const SecurityScanPage = () => {
                     />
                     <ScanTypeCard
                       type="standard"
-                      icon={<ShieldCheck className="w-5 h-5" />}
+                      icon={<ShieldCheck />}
                       title="Standard Scan"
                       description="Comprehensive security check"
                       timeEstimate="15 minutes"
@@ -296,7 +296,7 @@ const SecurityScanPage = () => {
                     />
                     <ScanTypeCard
                       type="deep"
-                      icon={<Shield className="w-5 h-5" />}
+                      icon={<Shield />}
                       title="Deep Scan"
                       description="In-depth penetration testing"
                       timeEstimate="30+ minutes"
@@ -306,21 +306,21 @@ const SecurityScanPage = () => {
                   </div>
                 </div>
                 
-                <div>
-                  <h3 className="text-sm font-medium text-gray-400 mb-3 flex items-center">
-                    <Server className="w-4 h-4 mr-2 text-blue-400" />
+                <div className="option-section">
+                  <h3 className="option-title">
+                    <Server className="option-icon" />
                     Scan Target
                   </h3>
-                  <div className="flex flex-col space-y-2">
+                  <div className="target-input-container">
                     <input
                       type="text"
                       value={targetAddress}
                       onChange={(e) => setTargetAddress(e.target.value)}
                       placeholder="127.0.0.1, example.com, or 192.168.1.0/24"
-                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      className="target-input"
                     />
-                    <p className="text-xs text-gray-500 flex items-center">
-                      <Info className="w-3 h-3 mr-1" />
+                    <p className="input-help">
+                      <Info className="help-icon" />
                       IP address, hostname, or CIDR notation for network range
                     </p>
                   </div>
@@ -329,24 +329,20 @@ const SecurityScanPage = () => {
             )}
           </div>
 
-          <div className="flex flex-wrap gap-4">
+          <div className="action-buttons">
             <button
               onClick={handleScan}
               disabled={isScanning}
-              className={`flex items-center justify-center py-3 px-8 rounded-xl font-medium transition-all ${
-                isScanning 
-                  ? 'bg-blue-600/50 cursor-not-allowed' 
-                  : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 shadow-lg hover:shadow-blue-800/40'
-              } text-white group`}
+              className={`scan-button ${isScanning ? 'scan-button-disabled' : 'scan-button-active'}`}
             >
               {isScanning ? (
                 <>
-                  <Loader2 className="mr-2 animate-spin" />
+                  <Loader2 className="button-icon spinner" />
                   Scanning...
                 </>
               ) : (
                 <>
-                  <div className="mr-2 group-hover:animate-pulse">
+                  <div className="button-icon-container">
                     <ShieldCheck />
                   </div>
                   Run Security Scan
@@ -357,9 +353,9 @@ const SecurityScanPage = () => {
             {isScanning && (
               <button
                 onClick={handleCancelScan}
-                className="flex items-center justify-center py-3 px-6 rounded-xl font-medium transition-all bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 text-white shadow-lg hover:shadow-gray-800/30"
+                className="cancel-button"
               >
-                <XCircle className="mr-2" />
+                <XCircle className="button-icon" />
                 Cancel Scan
               </button>
             )}
@@ -368,61 +364,61 @@ const SecurityScanPage = () => {
       </div>
 
       {isScanning && (
-        <div className="mb-8 bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-lg">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <h2 className="text-xl font-bold flex items-center">
-              <Loader2 className="mr-2 animate-spin text-blue-500" /> Scan in Progress
+        <div className="progress-panel">
+          <div className="progress-header">
+            <h2 className="progress-title">
+              <Loader2 className="spinner" /> Scan in Progress
             </h2>
-            <div className="flex items-center text-sm text-gray-400">
-              <Clock className="w-4 h-4 mr-1.5" />
+            <div className="estimated-time">
+              <Clock className="time-icon" />
               <span>Estimated time remaining: {estimatedTime}</span>
             </div>
           </div>
           
-          <div className="mb-6">
-            <div className="mb-3 flex justify-between items-center">
-              <span className="text-sm text-blue-400 font-medium flex items-center">
-                <ChevronRight className="w-4 h-4 mr-1" />
+          <div className="progress-container">
+            <div className="progress-status">
+              <span className="progress-stage">
+                <ChevronRight className="stage-icon" />
                 {scanStage}
               </span>
-              <span className="text-sm font-bold text-white bg-blue-900/80 px-3 py-1 rounded-full">
+              <span className="progress-percentage">
                 {scanProgress}%
               </span>
             </div>
-            <div className="w-full bg-gray-800 rounded-full h-2.5 overflow-hidden">
+            <div className="progress-bar-container">
               <div 
-                className={`h-2.5 rounded-full bg-gradient-to-r ${getProgressColor()} transition-all duration-500 ease-out`}
+                className={`progress-bar ${getProgressColor()}`}
                 style={{ width: `${scanProgress}%` }}
               ></div>
             </div>
           </div>
           
-          <div className="text-gray-400 text-sm flex items-center">
-            <Info className="w-4 h-4 mr-2 text-blue-400" />
+          <div className="progress-info">
+            <Info className="info-icon" />
             <span>You can continue using other features while the scan runs in the background</span>
           </div>
         </div>
       )}
 
       {error && (
-        <div className="mb-8 p-6 bg-red-900/20 border border-red-700/50 rounded-2xl shadow-lg animate-fade">
-          <div className="flex items-start">
-            <div className="p-2 bg-red-500/20 rounded-lg mr-4">
-              <XCircle className="text-red-400" size={24} />
+        <div className="error-panel">
+          <div className="error-content">
+            <div className="error-icon-container">
+              <XCircle className="error-icon" />
             </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-red-400 mb-2">Scan Failed</h3>
-              <p className="text-gray-300 mb-4">{error}</p>
-              <div className="flex space-x-3">
+            <div className="error-message-container">
+              <h3 className="error-title">Scan Failed</h3>
+              <p className="error-message">{error}</p>
+              <div className="error-actions">
                 <button 
                   onClick={() => setError(null)}
-                  className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 text-sm transition-colors"
+                  className="dismiss-button"
                 >
                   Dismiss
                 </button>
                 <button 
                   onClick={handleScan}
-                  className="px-4 py-2 bg-blue-600/70 hover:bg-blue-600 rounded-lg text-white text-sm transition-colors"
+                  className="retry-button"
                 >
                   Retry Scan
                 </button>
@@ -433,117 +429,118 @@ const SecurityScanPage = () => {
       )}
 
       {scanResult && (
-        <div className="mb-8 animate-fade">
-          <div className="mb-6 p-6 bg-gray-900 border border-green-700/50 rounded-2xl shadow-lg">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-center text-green-400">
-                <div className="p-2 bg-green-500/20 rounded-lg mr-4">
-                  <Check size={24} />
+        <div className="results-container">
+          <div className="results-header">
+            <div className="results-header-content">
+              <div className="completion-status">
+                <div className="completion-icon-container">
+                  <Check />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">Scan Complete</h2>
-                  <p className="text-sm text-gray-400">Completed at: {new Date(scanResult.timestamp).toLocaleString()}</p>
+                  <h2 className="completion-title">Scan Complete</h2>
+                  <p className="completion-time">Completed at: {new Date(scanResult.timestamp).toLocaleString()}</p>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-3 mt-4 md:mt-0">
-                <div className="px-3 py-1.5 bg-gray-800 rounded-lg text-sm">
-                  <span className="text-gray-400">Target:</span> <span className="font-mono text-gray-300">{targetAddress}</span>
+              <div className="scan-details">
+                <div className="scan-detail-item">
+                  <span className="detail-label">Target:</span> <span className="detail-value">{targetAddress}</span>
                 </div>
-                <div className="px-3 py-1.5 bg-gray-800 rounded-lg text-sm">
-                  <span className="text-gray-400">Scan ID:</span> <span className="font-mono text-gray-300">{scanResult.scanId}</span>
+                <div className="scan-detail-item">
+                  <span className="detail-label">Scan ID:</span> <span className="detail-value">{scanResult.scanId}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className={`p-5 rounded-xl border ${getThreatLevelBg(scanResult.threatLevel)} border-gray-700 shadow-md hover:shadow-lg transition-all`}>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-gray-400 text-sm font-medium flex items-center">
-                  <Shield className="w-4 h-4 mr-2" />
+          <div className="summary-cards">
+            <div className={`summary-card ${getThreatLevelBg(scanResult.threatLevel)}`}>
+              <div className="card-header">
+                <h3 className="card-title">
+                  <Shield className="card-icon" />
                   Threat Level
                 </h3>
-                <AlertTriangle className={`${getThreatLevelColor(scanResult.threatLevel)}`} size={18} />
+                <AlertTriangle className={getThreatLevelColor(scanResult.threatLevel)} />
               </div>
-              <p className={`text-3xl font-bold ${getThreatLevelColor(scanResult.threatLevel)} capitalize`}>
+              <p className={`card-value ${getThreatLevelColor(scanResult.threatLevel)}`}>
                 {scanResult.threatLevel || 'None'}
               </p>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="card-description">
                 Overall security risk assessment
               </p>
             </div>
             
-            <div className="p-5 bg-gray-900 rounded-xl border border-gray-700 shadow-md hover:shadow-lg transition-all">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-gray-400 text-sm font-medium flex items-center">
-                  <Server className="w-4 h-4 mr-2" />
+            <div className="summary-card">
+              <div className="card-header">
+                <h3 className="card-title">
+                  <Server className="card-icon" />
                   Systems Scanned
                 </h3>
-                <BarChart2 className="text-blue-400" size={18} />
+                <BarChart2 className="card-header-icon" />
               </div>
-              <p className="text-3xl font-bold text-white">{scanResult.systemsScanned}</p>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="card-value">
+                {scanResult.systemsScanned}
+              </p>
+              <p className="card-description">
                 Number of systems analyzed
               </p>
             </div>
             
-            <div className="p-5 bg-gray-900 rounded-xl border border-gray-700 shadow-md hover:shadow-lg transition-all">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-gray-400 text-sm font-medium flex items-center">
-                  <AlertTriangle className="w-4 h-4 mr-2" />
+            <div className="summary-card">
+              <div className="card-header">
+                <h3 className="card-title">
+                  <AlertTriangle className="card-icon" />
                   Issues Found
                 </h3>
-                <div className={scanResult.totalIssues > 0 ? "text-orange-400" : "text-green-400"}>
+                <div className={scanResult.totalIssues > 0 ? "issues-icon issues-found" : "issues-icon issues-none"}>
                   {scanResult.totalIssues > 0 ? (
-                    <AlertTriangle size={18} />
+                    <AlertTriangle />
                   ) : (
-                    <Check size={18} />
+                    <Check />
                   )}
                 </div>
               </div>
-              <p className="text-3xl font-bold text-white">{scanResult.totalIssues}</p>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="card-value">
+                {scanResult.totalIssues}
+              </p>
+              <p className="card-description">
                 {scanResult.totalIssues === 0 ? 'No vulnerabilities detected' : 'Potential security issues'}
               </p>
             </div>
           </div>
 
-          <div className="bg-gray-900 rounded-2xl border border-gray-700 shadow-lg overflow-hidden mb-6">
-            <div className="p-6 border-b border-gray-700">
-              <h2 className="text-xl font-bold flex items-center">
-                <AlertTriangle className="mr-3 text-orange-400" /> 
+          <div className="findings-container">
+            <div className="findings-header">
+              <h2 className="findings-title">
+                <AlertTriangle className="findings-title-icon" /> 
                 Security Findings
               </h2>
             </div>
 
             {scanResult.findings && scanResult.findings.length > 0 ? (
-              <div className="divide-y divide-gray-800">
+              <div className="findings-list">
                 {scanResult.findings.map(finding => (
                   <div 
                     key={finding.id} 
-                    className="p-6 hover:bg-gray-800/50 transition-colors"
+                    className="finding-item"
                   >
                     <div 
-                      className="flex justify-between items-start cursor-pointer"
+                      className="finding-header"
                       onClick={() => toggleFindingExpansion(finding.id)}
                     >
-                      <div className="flex items-start space-x-4">
-                        <div className={`mt-1 p-2 rounded-lg ${finding.severity === 'critical' ? 'bg-red-500/20 text-red-400' : 
-                                         finding.severity === 'high' ? 'bg-orange-500/20 text-orange-400' :
-                                         finding.severity === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                                         'bg-blue-500/20 text-blue-400'}`}>
+                      <div className="finding-title-section">
+                        <div className={`finding-icon-container severity-${finding.severity}`}>
                           {finding.severity === 'critical' || finding.severity === 'high' ? (
-                            <AlertTriangle size={20} />
+                            <AlertTriangle />
                           ) : (
-                            <AlertCircle size={20} />
+                            <AlertCircle />
                           )}
                         </div>
                         <div>
-                          <h3 className="font-medium text-white">{finding.title}</h3>
-                          <div className="mt-2 flex flex-wrap gap-2">
+                          <h3 className="finding-title">{finding.title}</h3>
+                          <div className="finding-badges">
                             {renderSeverityBadge(finding.severity)}
                             {finding.cvssScore && (
-                              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-700 text-xs font-medium text-gray-300">
+                              <span className="finding-badge">
                                 CVSS: {finding.cvssScore}
                               </span>
                             )}
@@ -552,73 +549,73 @@ const SecurityScanPage = () => {
                                 href={`https://nvd.nist.gov/vuln/detail/${finding.cve}`} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-700 hover:bg-gray-600 text-xs font-medium text-gray-300 transition-colors"
+                                className="finding-badge-link"
                               >
                                 {finding.cve}
-                                <ExternalLink className="w-3 h-3 ml-1" />
+                                <ExternalLink className="badge-link-icon" />
                               </a>
                             )}
                           </div>
                         </div>
                       </div>
-                      <div className="ml-4">
+                      <div className="expand-button">
                         {expandedFindings[finding.id] ? (
-                          <ChevronUp className="text-gray-400 mt-1.5" size={20} />
+                          <ChevronUp className="expand-icon" />
                         ) : (
-                          <ChevronDown className="text-gray-400 mt-1.5" size={20} />
+                          <ChevronDown className="expand-icon" />
                         )}
                       </div>
                     </div>
                     
                     {expandedFindings[finding.id] && (
-                      <div className="mt-6 pt-6 border-t border-gray-800 animate-fadeDown space-y-5">
-                        <div>
-                          <h4 className="text-sm font-medium text-gray-400 mb-3 flex items-center">
-                            <Info className="mr-2 text-blue-400" size={16} />
+                      <div className="finding-details">
+                        <div className="finding-section">
+                          <h4 className="section-title">
+                            <Info className="section-icon" />
                             Description
                           </h4>
-                          <p className="text-gray-300">{finding.description}</p>
+                          <p className="section-content">{finding.description}</p>
                         </div>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                          <div>
-                            <h4 className="text-sm font-medium text-gray-400 mb-3 flex items-center">
-                              <Server className="mr-2 text-blue-400" size={16} />
+                        <div className="finding-grid">
+                          <div className="finding-section">
+                            <h4 className="section-title">
+                              <Server className="section-icon" />
                               Affected Systems
                             </h4>
-                            <div className="bg-gray-800 p-4 rounded-lg font-mono text-sm text-gray-300">
+                            <div className="code-block">
                               {finding.affectedSystems || targetAddress}
                             </div>
                           </div>
                           
-                          <div>
-                            <h4 className="text-sm font-medium text-gray-400 mb-3 flex items-center">
-                              <Check className="mr-2 text-green-400" size={16} />
+                          <div className="finding-section">
+                            <h4 className="section-title">
+                              <Check className="section-icon" />
                               Recommended Action
                             </h4>
-                            <div className="bg-gray-800 p-4 rounded-lg text-gray-300">
+                            <div className="code-block">
                               {finding.remediation}
                             </div>
                           </div>
                         </div>
 
                         {finding.references && (
-                          <div>
-                            <h4 className="text-sm font-medium text-gray-400 mb-3 flex items-center">
-                              <ExternalLink className="mr-2 text-blue-400" size={16} />
+                          <div className="finding-section">
+                            <h4 className="section-title">
+                              <ExternalLink className="section-icon" />
                               References
                             </h4>
-                            <div className="space-y-2">
+                            <div className="references-list">
                               {finding.references.map((ref, index) => (
                                 <a 
                                   key={index}
                                   href={ref.url} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  className="block text-blue-400 hover:text-blue-300 text-sm transition-colors flex items-center"
+                                  className="reference-link"
                                 >
-                                  <ChevronRight className="w-3 h-3 mr-1.5 flex-shrink-0" />
-                                  <span className="truncate">{ref.title || ref.url}</span>
+                                  <ChevronRight className="reference-icon" />
+                                  <span className="reference-text">{ref.title || ref.url}</span>
                                 </a>
                               ))}
                             </div>
@@ -630,31 +627,31 @@ const SecurityScanPage = () => {
                 ))}
               </div>
             ) : (
-              <div className="p-12 text-center">
-                <div className="mx-auto w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mb-6">
-                  <Check className="text-green-400" size={32} />
+              <div className="no-findings">
+                <div className="no-findings-icon">
+                  <Check className="success-icon" />
                 </div>
-                <h3 className="text-xl font-medium text-green-400 mb-3">No Security Issues Found</h3>
-                <p className="text-gray-400 max-w-lg mx-auto">
+                <h3 className="no-findings-title">No Security Issues Found</h3>
+                <p className="no-findings-description">
                   The scan completed successfully and didn't detect any security vulnerabilities in your systems.
                 </p>
               </div>
             )}
           </div>
           
-          <div className="flex flex-col sm:flex-row justify-end gap-3">
+          <div className="results-actions">
             <button
               onClick={() => window.print()}
-              className="flex items-center justify-center py-2.5 px-6 rounded-xl font-medium transition-colors bg-gray-800 hover:bg-gray-700 text-gray-300"
+              className="export-button"
             >
-              <ExternalLink className="w-4 h-4 mr-2" />
+              <ExternalLink className="button-icon" />
               Export Report
             </button>
             <button
               onClick={() => setScanResult(null)}
-              className="flex items-center justify-center py-2.5 px-6 rounded-xl font-medium transition-colors bg-blue-600 hover:bg-blue-500 text-white"
+              className="new-scan-button"
             >
-              <Scan className="w-4 h-4 mr-2" />
+              <Scan className="button-icon" />
               Run New Scan
             </button>
           </div>
@@ -662,24 +659,24 @@ const SecurityScanPage = () => {
       )}
 
       {!isScanning && !scanResult && !error && (
-        <div className="p-12 bg-gray-900 rounded-2xl border border-gray-700 shadow-lg text-center">
-          <div className="mx-auto w-24 h-24 bg-blue-500/10 rounded-full flex items-center justify-center mb-6">
-            <ShieldCheck className="text-blue-400" size={40} />
+        <div className="empty-state">
+          <div className="empty-icon">
+            <ShieldCheck className="icon" />
           </div>
-          <h2 className="text-2xl font-medium text-gray-300 mb-4">No Recent Scan Results</h2>
-          <p className="text-gray-400 mb-6 max-w-lg mx-auto">
+          <h2 className="empty-title">No Recent Scan Results</h2>
+          <p className="empty-description">
             Get started by running a security scan to identify potential vulnerabilities in your systems.
           </p>
           <button
             onClick={handleScan}
-            className="mx-auto flex items-center justify-center py-2.5 px-8 rounded-xl font-medium transition-all bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white shadow-lg hover:shadow-blue-800/40"
+            className="initial-scan-button"
           >
-            <ShieldCheck className="mr-2" />
+            <ShieldCheck className="button-icon" />
             Run Initial Scan
           </button>
-          <div className="mt-8 pt-6 border-t border-gray-800">
-            <div className="inline-flex items-center text-sm text-blue-400 bg-blue-500/10 px-4 py-2 rounded-full">
-              <HelpCircle className="mr-2" size={16} />
+          <div className="empty-footer">
+            <div className="recommendation-badge">
+              <HelpCircle className="badge-icon" />
               <span>Regular scanning is recommended for maintaining system security</span>
             </div>
           </div>

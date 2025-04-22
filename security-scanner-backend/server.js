@@ -9,7 +9,6 @@ const sslChecker = require('ssl-checker');
 const axios = require('axios');
 const { execSync } = require('child_process');
 const net = require('net');
-const fetch = require('node-fetch');
 
 
 const app = express();
