@@ -5,7 +5,8 @@ const {
   startScan, 
   getScanStatus, 
   getScanResults, 
-  cancelScan 
+  cancelScan,
+  getRecentScans
 } = require('../utils/scanManager');
 
 /**
@@ -29,6 +30,34 @@ router.post('/start', async (req, res) => {
         error: 'Missing required parameter: targets',
         details: 'Please provide an IP address, hostname, or CIDR notation'
       });
+    }
+    
+    // Basic input validation
+    const ipPattern = /^(\d{1,3}\.){3}\d{1,3}(\/\d{1,2})?$/;
+    const hostnamePattern = /^[a-zA-Z0-9]([a-zA-Z0-9\-\.]{0,61}[a-zA-Z0-9])?$/;
+    const ipRangePattern = /^(\d{1,3}\.){3}\d{1,3}-(\d{1,3}\.){3}\d{1,3}$/;
+    
+    if (!ipPattern.test(targets) && !hostnamePattern.test(targets) && !ipRangePattern.test(targets)) {
+      return res.status(400).json({
+        error: 'Invalid target format',
+        details: 'Target must be a valid IP address, CIDR range, or hostname'
+      });
+    }
+    
+    // Check if nmap is installed
+    try {
+      const { exec } = require('child_process');
+      exec('nmap -V', (error) => {
+        if (error) {
+          console.error('Nmap not found:', error);
+          return res.status(500).json({
+            error: 'Scan dependency missing',
+            details: 'Required scanning tool (nmap) not found on the system'
+          });
+        }
+      });
+    } catch (err) {
+      console.error('Failed to check for nmap:', err);
     }
     
     // Start the scan and return ID
@@ -129,7 +158,7 @@ router.get('/results/:id', (req, res) => {
       if (status.status === 'failed') {
         return res.status(500).json({ 
           error: 'Scan failed to complete',
-          details: 'The scan encountered an error and could not generate results'
+          details: status.error || 'The scan encountered an error and could not generate results'
         });
       }
       

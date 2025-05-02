@@ -4,88 +4,25 @@ const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const xml2js = require('xml2js');
 
 // Store scan metadata
 const scans = {};
 
-// Scan stages for better progress reporting
-const SCAN_STAGES = {
-  QUICK: [
-    { name: 'Initializing scan', duration: 5 },
-    { name: 'Port discovery', duration: 20 },
-    { name: 'Service identification', duration: 30 },
-    { name: 'Vulnerability check', duration: 30 },
-    { name: 'Generating report', duration: 15 }
-  ],
-  STANDARD: [
-    { name: 'Initializing scan', duration: 5 },
-    { name: 'Host discovery', duration: 15 },
-    { name: 'Port scanning', duration: 25 },
-    { name: 'Service enumeration', duration: 25 },
-    { name: 'OS detection', duration: 15 },
-    { name: 'Vulnerability assessment', duration: 40 },
-    { name: 'Generating report', duration: 15 }
-  ],
-  DEEP: [
-    { name: 'Initializing scan', duration: 5 },
-    { name: 'Network mapping', duration: 20 },
-    { name: 'Thorough port discovery', duration: 30 },
-    { name: 'Service fingerprinting', duration: 25 },
-    { name: 'OS and version detection', duration: 20 },
-    { name: 'Script scanning', duration: 40 },
-    { name: 'Vulnerability assessment', duration: 50 },
-    { name: 'Exploitation checks', duration: 40 },
-    { name: 'Report generation', duration: 20 }
-  ]
-};
-
-// Simulate scan progress
-const simulateProgress = (id, scanType) => {
-  const stages = SCAN_STAGES[scanType.toUpperCase()] || SCAN_STAGES.QUICK;
-  let currentStageIndex = 0;
-  let stageProgress = 0;
-  const stageIncrement = 100 / stages.length;
-  
-  const updateInterval = setInterval(() => {
-    const scan = scans[id];
-    if (!scan || scan.status !== 'running') {
-      clearInterval(updateInterval);
-      return;
-    }
-
-    stageProgress += 1;
-    const stage = stages[currentStageIndex];
-    
-    if (stageProgress >= stage.duration) {
-      currentStageIndex++;
-      stageProgress = 0;
-      
-      if (currentStageIndex >= stages.length) {
-        scan.progress = 100;
-        scan.stage = 'Finalizing';
-        clearInterval(updateInterval);
-        
-        // Simulate completion after a brief delay
-        setTimeout(() => {
-          if (scan.status === 'running') {
-            completeScan(id);
-          }
-        }, 1000);
-        
-        return;
-      }
-    }
-    
-    const overallProgress = Math.min(
-      Math.floor((currentStageIndex * stageIncrement) + (stageProgress / stage.duration * stageIncrement)),
-      99
-    );
-    
-    scan.progress = overallProgress;
-    scan.stage = stages[currentStageIndex].name;
-  }, 1000);
-  
-  return updateInterval;
+// Scan configuration for different types
+const SCAN_CONFIGS = {
+  QUICK: {
+    nmapArgs: ['-T4', '-F', '--open'],  // Fast scan of most common ports
+    description: 'Basic scan of common ports'
+  },
+  STANDARD: {
+    nmapArgs: ['-T4', '-A', '-p-', '--open'],  // All ports, OS and service detection
+    description: 'Comprehensive scan of all ports with service detection'
+  },
+  DEEP: {
+    nmapArgs: ['-T3', '-A', '-p-', '--script=default,vuln,auth,brute', '--open'],  // Thorough scan with vulnerability scripts
+    description: 'Deep vulnerability assessment with script scanning'
+  }
 };
 
 // Process target input to handle different formats
@@ -95,11 +32,12 @@ const parseTargets = (targets) => {
   // Clean input and validate
   const cleaned = targets.trim();
   
-  // Simple validation - this should be enhanced for production
+  // Basic validation for IP addresses, CIDR ranges, and hostnames
   const ipPattern = /^(\d{1,3}\.){3}\d{1,3}(\/\d{1,2})?$/;
   const hostnamePattern = /^[a-zA-Z0-9]([a-zA-Z0-9\-\.]{0,61}[a-zA-Z0-9])?$/;
+  const ipRangePattern = /^(\d{1,3}\.){3}\d{1,3}-(\d{1,3}\.){3}\d{1,3}$/;
   
-  if (ipPattern.test(cleaned) || hostnamePattern.test(cleaned)) {
+  if (ipPattern.test(cleaned) || hostnamePattern.test(cleaned) || ipRangePattern.test(cleaned)) {
     return cleaned;
   }
   
@@ -107,118 +45,247 @@ const parseTargets = (targets) => {
   return '127.0.0.1';
 };
 
-// Generate mock findings based on scan type
-const generateFindings = (scanType, target) => {
-  const baseFindings = [
-    {
-      id: uuidv4(),
-      title: 'Open SSH Port (22)',
-      severity: 'low',
-      description: 'Port 22 (SSH) is open and accessible. While not inherently a vulnerability, unnecessary open ports increase attack surface.',
-      remediation: 'If SSH access is not required, disable the service or restrict access using a firewall.',
-      affectedSystems: target,
-      cvssScore: '3.0',
-      references: [
-        { title: 'SSH Security Best Practices', url: 'https://www.ssh.com/academy/ssh/security' }
-      ]
+// Parse nmap XML output to extract findings
+const parseNmapResults = async (xmlPath, scanType, targets) => {
+  try {
+    const xmlData = fs.readFileSync(xmlPath, 'utf8');
+    const parser = new xml2js.Parser({ explicitArray: false });
+    const result = await parser.parseStringPromise(xmlData);
+    
+    if (!result.nmaprun || !result.nmaprun.host) {
+      return { 
+        findings: [],
+        systemsScanned: 0,
+        totalIssues: 0,
+        threatLevel: 'none'
+      };
     }
-  ];
-  
-  // Add more findings for deeper scans
-  if (scanType === 'standard' || scanType === 'deep') {
-    baseFindings.push(
-      {
-        id: uuidv4(),
-        title: 'Outdated SSL/TLS Version',
-        severity: 'medium',
-        description: 'The system is using an outdated SSL/TLS protocol version which has known vulnerabilities.',
-        remediation: 'Update your SSL/TLS configuration to use only TLS 1.2 or higher and disable older protocols.',
-        affectedSystems: target,
-        cve: 'CVE-2015-0204',
-        cvssScore: '5.3',
-        references: [
-          { title: 'NIST Guidelines for TLS', url: 'https://csrc.nist.gov/publications/detail/sp/800-52/rev-2/final' }
-        ]
+    
+    // Ensure hosts is always an array
+    const hosts = Array.isArray(result.nmaprun.host) ? result.nmaprun.host : [result.nmaprun.host];
+    const findings = [];
+    
+    // Process each host
+    hosts.forEach(host => {
+      const hostAddress = host.address && host.address.addr ? host.address.addr : 'unknown';
+      
+      // Process ports if available
+      if (host.ports && host.ports.port) {
+        const ports = Array.isArray(host.ports.port) ? host.ports.port : [host.ports.port];
+        
+        ports.forEach(port => {
+          // Basic port finding
+          if (port.state && port.state.state === 'open') {
+            const serviceName = port.service ? port.service.name || 'unknown' : 'unknown';
+            const serviceProduct = port.service && port.service.product ? port.service.product : '';
+            const serviceVersion = port.service && port.service.version ? port.service.version : '';
+            
+            let severity = 'low';
+            let title = `Open ${serviceName.toUpperCase()} Port (${port.portid})`;
+            let description = `Port ${port.portid} (${serviceName}) is open and accessible.`;
+            let remediation = `If ${serviceName} access is not required, disable the service or restrict access using a firewall.`;
+            let cvssScore = '3.0';
+            let references = [
+              { title: `${serviceName.toUpperCase()} Security Best Practices`, url: `https://www.google.com/search?q=${serviceName}+security+best+practices` }
+            ];
+            
+            // Enhance findings based on service type
+            if (serviceName === 'http' || serviceName === 'https') {
+              title = `Web Server (${serviceName.toUpperCase()}) Exposed`;
+              description = `${serviceName.toUpperCase()} web server is accessible on port ${port.portid}${serviceProduct ? ` (${serviceProduct} ${serviceVersion})` : ''}.`;
+              remediation = 'Ensure the web server is properly configured with TLS, security headers, and access controls.';
+              references.push({ title: 'OWASP Web Security', url: 'https://owasp.org/www-project-web-security-testing-guide/' });
+            } else if (serviceName === 'ssh') {
+              title = `SSH Service Exposed (Port ${port.portid})`;
+              description = `SSH service is accessible on port ${port.portid}${serviceProduct ? ` (${serviceProduct} ${serviceVersion})` : ''}.`;
+              remediation = 'Implement key-based authentication, disable root login, and use strong ciphers.';
+              references.push({ title: 'SSH Hardening Guide', url: 'https://www.ssh.com/academy/ssh/security' });
+            } else if (serviceName === 'ftp') {
+              severity = 'medium';
+              title = `FTP Service Exposed (Port ${port.portid})`;
+              description = `FTP service is accessible on port ${port.portid}${serviceProduct ? ` (${serviceProduct} ${serviceVersion})` : ''}. FTP transfers data in cleartext.`;
+              remediation = 'Replace FTP with SFTP or FTPS for secure file transfers.';
+              cvssScore = '5.0';
+              references.push({ title: 'Secure File Transfer Guide', url: 'https://www.ncsc.gov.uk/collection/small-business-guide/using-passwords-protect-your-data' });
+            } else if (serviceName === 'telnet') {
+              severity = 'high';
+              title = `Telnet Service Exposed (Port ${port.portid})`;
+              description = `Telnet service is accessible on port ${port.portid}${serviceProduct ? ` (${serviceProduct} ${serviceVersion})` : ''}. Telnet transmits data in cleartext, including passwords.`;
+              remediation = 'Replace Telnet with SSH for secure remote administration.';
+              cvssScore = '7.5';
+              references.push({ title: 'NIST Guidelines', url: 'https://csrc.nist.gov/publications/detail/sp/800-82/rev-2/final' });
+            }
+            
+            // Check for outdated versions
+            if (serviceVersion && isOutdatedService(serviceName, serviceVersion)) {
+              severity = severity === 'low' ? 'medium' : (severity === 'medium' ? 'high' : severity);
+              description += ` The detected version (${serviceVersion}) may contain known vulnerabilities.`;
+              remediation = `Update ${serviceName} to the latest secure version and apply all security patches.`;
+            }
+            
+            findings.push({
+              id: uuidv4(),
+              title,
+              severity,
+              description,
+              remediation,
+              affectedSystems: hostAddress,
+              cvssScore,
+              references
+            });
+          }
+        });
       }
-    );
-  }
-  
-  if (scanType === 'deep') {
-    baseFindings.push(
-      {
-        id: uuidv4(),
-        title: 'Critical Authentication Bypass',
-        severity: 'critical',
-        description: 'A potential authentication bypass vulnerability was detected in the web application, which could allow unauthorized access to protected resources.',
-        remediation: 'Apply the latest security patches from the vendor and implement proper input validation.',
-        affectedSystems: target,
-        cve: 'CVE-2023-1234',
-        cvssScore: '9.8',
-        references: [
-          { title: 'Authentication Best Practices', url: 'https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication' },
-          { title: 'Patch Information', url: 'https://example.com/security/patches' }
-        ]
-      },
-      {
-        id: uuidv4(),
-        title: 'Insecure Default Configuration',
-        severity: 'high',
-        description: 'The system is using default or insecure configuration settings that could be exploited by attackers.',
-        remediation: 'Review and harden system configurations following security best practices and frameworks like CIS benchmarks.',
-        affectedSystems: target,
-        cvssScore: '7.5',
-        references: [
-          { title: 'CIS Benchmarks', url: 'https://www.cisecurity.org/cis-benchmarks/' }
-        ]
+      
+      // Add OS detection findings
+      if (host.os && host.os.osmatch && scanType !== 'quick') {
+        const osMatches = Array.isArray(host.os.osmatch) ? host.os.osmatch : [host.os.osmatch];
+        if (osMatches.length > 0) {
+          const topOs = osMatches[0];
+          const osName = topOs.name || 'Unknown OS';
+          
+          // Check for end-of-life operating systems
+          if (isEolOperatingSystem(osName)) {
+            findings.push({
+              id: uuidv4(),
+              title: 'End-of-Life Operating System Detected',
+              severity: 'high',
+              description: `The system appears to be running ${osName}, which is no longer supported with security updates.`,
+              remediation: 'Upgrade to a supported operating system version that receives regular security updates.',
+              affectedSystems: hostAddress,
+              cvssScore: '7.8',
+              references: [
+                { title: 'OS End-of-Life Risks', url: 'https://www.cisa.gov/news-events/alerts/2019/06/17/microsoft-ending-support-windows-server-2008-and-windows-7' }
+              ]
+            });
+          }
+        }
       }
-    );
+      
+      // Add script findings for deep scans
+      if (scanType === 'deep' && host.hostscript) {
+        const scripts = Array.isArray(host.hostscript.script) ? host.hostscript.script : [host.hostscript.script];
+        
+        scripts.forEach(script => {
+          if (script.id && script.output) {
+            // Process vulnerability scripts
+            if (script.id.startsWith('vuln-') || script.id.includes('vuln')) {
+              const severity = script.output.toLowerCase().includes('critical') ? 'critical' :
+                              script.output.toLowerCase().includes('high') ? 'high' :
+                              script.output.toLowerCase().includes('medium') ? 'medium' : 'low';
+              
+              findings.push({
+                id: uuidv4(),
+                title: `Vulnerability: ${script.id}`,
+                severity,
+                description: script.output.substring(0, 500) + (script.output.length > 500 ? '...' : ''),
+                remediation: 'Apply security patches and follow vendor recommendations.',
+                affectedSystems: hostAddress,
+                cvssScore: getCvssFromSeverity(severity),
+                references: [
+                  { title: 'Vulnerability Details', url: `https://nvd.nist.gov/vuln/search/results?form_type=Basic&results_type=overview&query=${script.id}` }
+                ]
+              });
+            }
+          }
+        });
+      }
+      
+      // If SSL/TLS is detected, check for weak ciphers
+      if (scanType !== 'quick' && host.ports && host.ports.port) {
+        const ports = Array.isArray(host.ports.port) ? host.ports.port : [host.ports.port];
+        const sslPorts = ports.filter(port => 
+          (port.service && port.service.name === 'https') || 
+          (port.service && port.service.name === 'ssl')
+        );
+        
+        if (sslPorts.length > 0) {
+          findings.push({
+            id: uuidv4(),
+            title: 'SSL/TLS Configuration Check Recommended',
+            severity: 'medium',
+            description: 'SSL/TLS services were detected. These should be checked for weak ciphers, outdated protocols, and certificate issues.',
+            remediation: 'Run a dedicated SSL/TLS scanner to verify secure configuration.',
+            affectedSystems: hostAddress,
+            cvssScore: '5.3',
+            references: [
+              { title: 'SSL/TLS Best Practices', url: 'https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Security_Cheat_Sheet.html' }
+            ]
+          });
+        }
+      }
+    });
+    
+    // Calculate threat level based on findings
+    let threatLevel = 'none';
+    if (findings.some(f => f.severity === 'critical')) {
+      threatLevel = 'critical';
+    } else if (findings.some(f => f.severity === 'high')) {
+      threatLevel = 'high';
+    } else if (findings.some(f => f.severity === 'medium')) {
+      threatLevel = 'medium';
+    } else if (findings.length > 0) {
+      threatLevel = 'low';
+    }
+    
+    return {
+      findings,
+      systemsScanned: hosts.length,
+      totalIssues: findings.length,
+      threatLevel
+    };
+  } catch (error) {
+    console.error('Error parsing Nmap results:', error);
+    return {
+      findings: [],
+      systemsScanned: 0,
+      totalIssues: 0,
+      threatLevel: 'none',
+      error: 'Failed to parse scan results'
+    };
   }
-  
-  return baseFindings;
 };
 
-// Complete a scan with results
-const completeScan = (id) => {
-  const scan = scans[id];
-  if (!scan) return;
-  
-  scan.status = 'completed';
-  scan.progress = 100;
-  scan.stage = 'Completed';
-  scan.completedAt = new Date();
-  
-  const findings = generateFindings(scan.scanType, scan.targets);
-  
-  // Generate threat level based on findings
-  let threatLevel = 'none';
-  if (findings.some(f => f.severity === 'critical')) {
-    threatLevel = 'critical';
-  } else if (findings.some(f => f.severity === 'high')) {
-    threatLevel = 'high';
-  } else if (findings.some(f => f.severity === 'medium')) {
-    threatLevel = 'medium';
-  } else if (findings.length > 0) {
-    threatLevel = 'low';
-  }
-  
-  scan.results = {
-    scanId: id,
-    systemsScanned: scan.scanType === 'quick' ? 1 : (scan.scanType === 'standard' ? 3 : 5),
-    totalIssues: findings.length,
-    threatLevel,
-    timestamp: Date.now(),
-    findings
+// Helper function to check for outdated service versions
+const isOutdatedService = (serviceName, version) => {
+  // This would be expanded with a comprehensive database of service versions
+  const outdatedVersions = {
+    'apache': ['1.', '2.0.', '2.2.'],
+    'nginx': ['0.', '1.10.', '1.12.', '1.14.'],
+    'openssh': ['4.', '5.', '6.', '7.0', '7.1', '7.2', '7.3'],
+    'mysql': ['5.5.', '5.6.', '5.7.']
   };
   
-  // Save results to file
-  try {
-    fs.writeFileSync(scan.outputPath, JSON.stringify(scan.results, null, 2));
-  } catch (err) {
-    console.error(`Failed to write scan results: ${err.message}`);
+  if (outdatedVersions[serviceName]) {
+    return outdatedVersions[serviceName].some(outdated => version.startsWith(outdated));
+  }
+  
+  return false;
+};
+
+// Check if OS is end-of-life
+const isEolOperatingSystem = (osName) => {
+  // This would be expanded with a comprehensive list
+  const eolSystems = [
+    'Windows XP', 'Windows Server 2003', 'Windows Server 2008', 'Windows 7',
+    'Ubuntu 16.04', 'Ubuntu 14.04', 'Debian 8', 'CentOS 6', 'CentOS 7'
+  ];
+  
+  return eolSystems.some(eol => osName.includes(eol));
+};
+
+// Map severity to CVSS score
+const getCvssFromSeverity = (severity) => {
+  switch (severity) {
+    case 'critical': return '9.5';
+    case 'high': return '7.5';
+    case 'medium': return '5.0';
+    case 'low': return '3.0';
+    default: return '2.0';
   }
 };
 
-// Start a new scan
+// Implement a real scan function
 const startScan = (scanType = 'quick', targets = '127.0.0.1') => {
   try {
     // Validate scan type
@@ -229,7 +296,7 @@ const startScan = (scanType = 'quick', targets = '127.0.0.1') => {
       throw new Error(`Invalid scan type: ${scanType}. Must be one of: ${validScanTypes.join(', ')}`);
     }
     
-    // Create scan ID and prepare output directory
+    // Create scan ID and prepare output directories
     const id = uuidv4();
     const scanPath = path.join(__dirname, '..', 'scans');
     
@@ -241,23 +308,119 @@ const startScan = (scanType = 'quick', targets = '127.0.0.1') => {
       }
     }
     
-    const outputPath = path.join(scanPath, `${id}.json`);
+    const xmlOutputPath = path.join(scanPath, `${id}.xml`);
+    const jsonOutputPath = path.join(scanPath, `${id}.json`);
     const parsedTargets = parseTargets(targets);
     
-    // Prepare for real scan command (commented out)
-    /*
-    const args = ['-oX', outputPath, parsedTargets];
+    // Get scan configuration
+    const scanConfig = SCAN_CONFIGS[normalizedScanType.toUpperCase()];
     
-    if (normalizedScanType === 'quick') {
-      args.unshift('-T4', '-F');
-    } else if (normalizedScanType === 'standard') {
-      args.unshift('-T4', '-A');
-    } else if (normalizedScanType === 'deep') {
-      args.unshift('-T3', '-A', '-v', '--script=vuln');
-    }
+    // Prepare actual Nmap command
+    const args = [...scanConfig.nmapArgs, '-oX', xmlOutputPath, parsedTargets];
     
-    const child = spawn('nmap', args);
-    */
+    // Log the command (for debugging)
+    console.log(`Executing: nmap ${args.join(' ')}`);
+    
+    // Execute the Nmap command
+    const nmapProcess = spawn('nmap', args);
+    
+    // Track process output for logging and progress tracking
+    let outputBuffer = '';
+    let errorBuffer = '';
+    let hostCount = 0;
+    let currentStage = 'Initializing scan';
+    
+    nmapProcess.stdout.on('data', (data) => {
+      const output = data.toString();
+      outputBuffer += output;
+      
+      // Update stage based on nmap output
+      if (output.includes('Initiating SYN Stealth Scan')) {
+        currentStage = 'Port scanning';
+      } else if (output.includes('Initiating Service scan')) {
+        currentStage = 'Service detection';
+      } else if (output.includes('Initiating OS detection')) {
+        currentStage = 'OS detection';
+      } else if (output.includes('Initiating NSE')) {
+        currentStage = 'Script scanning';
+      } else if (output.match(/Discovered open port \d+\/\w+/)) {
+        currentStage = 'Port discovery';
+      } else if (output.includes('Completed ')) {
+        // Extract completion percentage
+        const match = output.match(/Completed ([0-9.]+)%/);
+        if (match && match[1]) {
+          const progress = parseFloat(match[1]);
+          if (scans[id]) {
+            scans[id].progress = Math.min(progress, 99);
+          }
+        }
+      }
+      
+      // Count hosts for better reporting
+      if (output.includes('Host is up')) {
+        hostCount++;
+      }
+      
+      // Update scan stage
+      if (scans[id]) {
+        scans[id].stage = currentStage;
+        scans[id].hostsFound = hostCount;
+      }
+    });
+    
+    nmapProcess.stderr.on('data', (data) => {
+      errorBuffer += data.toString();
+      console.error(`Nmap stderr: ${data.toString()}`);
+    });
+    
+    // Handle scan completion
+    nmapProcess.on('close', async (code) => {
+      console.log(`Nmap scan completed with code ${code}`);
+      
+      if (!scans[id]) return; // Scan might have been deleted
+      
+      if (code !== 0) {
+        scans[id].status = 'failed';
+        scans[id].error = `Scan failed with exit code ${code}: ${errorBuffer}`;
+        return;
+      }
+      
+      try {
+        // Parse the XML output
+        const scanResults = await parseNmapResults(xmlOutputPath, normalizedScanType, parsedTargets);
+        
+        // Update scan status
+        scans[id].status = 'completed';
+        scans[id].progress = 100;
+        scans[id].stage = 'Completed';
+        scans[id].completedAt = new Date();
+        scans[id].results = {
+          scanId: id,
+          systemsScanned: scanResults.systemsScanned,
+          totalIssues: scanResults.totalIssues,
+          threatLevel: scanResults.threatLevel,
+          timestamp: Date.now(),
+          findings: scanResults.findings
+        };
+        
+        // Save results to JSON file
+        fs.writeFileSync(jsonOutputPath, JSON.stringify(scans[id].results, null, 2));
+      } catch (err) {
+        console.error(`Failed to process scan results: ${err.message}`);
+        scans[id].status = 'failed';
+        scans[id].error = `Failed to process scan results: ${err.message}`;
+      }
+    });
+    
+    // Handle scan errors
+    nmapProcess.on('error', (err) => {
+      console.error(`Nmap execution error: ${err.message}`);
+      
+      if (scans[id]) {
+        scans[id].status = 'failed';
+        scans[id].error = `Failed to execute scan: ${err.message}`;
+      }
+    });
     
     // Store scan metadata
     scans[id] = {
@@ -268,13 +431,11 @@ const startScan = (scanType = 'quick', targets = '127.0.0.1') => {
       progress: 0,
       stage: 'Initializing',
       startedAt: new Date(),
-      outputPath,
-      // process: child, // For real scan
+      xmlOutputPath,
+      jsonOutputPath,
+      process: nmapProcess,
+      hostsFound: 0
     };
-    
-    // Start progress simulation instead of actual scan for demo
-    const updateInterval = simulateProgress(id, normalizedScanType);
-    scans[id].updateInterval = updateInterval;
     
     return id;
   } catch (error) {
@@ -294,7 +455,8 @@ const getScanStatus = (id) => {
     currentStage: scan.stage,
     scanType: scan.scanType,
     startedAt: scan.startedAt,
-    targetCount: scan.targets.includes('/') ? 'Multiple' : 1
+    targetCount: scan.hostsFound || (scan.targets.includes('/') ? 'Multiple' : 1),
+    error: scan.error
   };
 };
 
@@ -309,9 +471,9 @@ const getScanResults = (id) => {
   }
   
   // If the scan is completed but no results found, try to read from file
-  if (scan.status === 'completed' && fs.existsSync(scan.outputPath)) {
+  if (scan.status === 'completed' && fs.existsSync(scan.jsonOutputPath)) {
     try {
-      const fileData = fs.readFileSync(scan.outputPath, 'utf8');
+      const fileData = fs.readFileSync(scan.jsonOutputPath, 'utf8');
       scan.results = JSON.parse(fileData);
       return scan.results;
     } catch (err) {
@@ -328,24 +490,17 @@ const cancelScan = (id) => {
   const scan = scans[id];
   if (!scan || scan.status !== 'running') return false;
   
-  // Clear the simulation interval
-  if (scan.updateInterval) {
-    clearInterval(scan.updateInterval);
-  }
-  
-  // Kill the actual process if using real scan
-  /*
+  // Kill the Nmap process
   if (scan.process) {
     scan.process.kill();
   }
-  */
   
   scan.status = 'cancelled';
   scan.stage = 'Scan cancelled';
   return true;
 };
 
-// Clean up old scans (you might call this periodically)
+// Clean up old scans
 const cleanupOldScans = (maxAgeHours = 24) => {
   const cutoff = new Date(Date.now() - (maxAgeHours * 60 * 60 * 1000));
   
@@ -354,22 +509,25 @@ const cleanupOldScans = (maxAgeHours = 24) => {
     const scanDate = scan.completedAt || scan.startedAt;
     
     if (scanDate < cutoff) {
-      // Clean up intervals
-      if (scan.updateInterval) {
-        clearInterval(scan.updateInterval);
-      }
-      
       // Clean up process
       if (scan.process && scan.status === 'running') {
         scan.process.kill();
       }
       
-      // Optionally remove result file
-      if (fs.existsSync(scan.outputPath)) {
+      // Remove result files
+      if (fs.existsSync(scan.xmlOutputPath)) {
         try {
-          fs.unlinkSync(scan.outputPath);
+          fs.unlinkSync(scan.xmlOutputPath);
         } catch (err) {
-          console.error(`Failed to delete scan file: ${err.message}`);
+          console.error(`Failed to delete scan XML file: ${err.message}`);
+        }
+      }
+      
+      if (fs.existsSync(scan.jsonOutputPath)) {
+        try {
+          fs.unlinkSync(scan.jsonOutputPath);
+        } catch (err) {
+          console.error(`Failed to delete scan JSON file: ${err.message}`);
         }
       }
       
@@ -379,10 +537,28 @@ const cleanupOldScans = (maxAgeHours = 24) => {
   });
 };
 
+// Get a list of recent scans (for history endpoint)
+const getRecentScans = (limit = 10) => {
+  return Object.values(scans)
+    .sort((a, b) => (b.startedAt - a.startedAt))
+    .slice(0, limit)
+    .map(scan => ({
+      id: scan.id,
+      status: scan.status,
+      scanType: scan.scanType,
+      targets: scan.targets,
+      startedAt: scan.startedAt,
+      completedAt: scan.completedAt,
+      threatLevel: scan.results ? scan.results.threatLevel : null,
+      totalIssues: scan.results ? scan.results.totalIssues : null
+    }));
+};
+
 module.exports = { 
   startScan, 
   getScanStatus, 
   getScanResults, 
   cancelScan,
-  cleanupOldScans
+  cleanupOldScans,
+  getRecentScans
 };
