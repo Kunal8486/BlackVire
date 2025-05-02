@@ -5,7 +5,6 @@ import Footer from "./Components/Footer/Footer";
 import Home from "./Pages/Home/Home";
 import Dashboard from "./Pages/Dashboard/Dashboard";
 import SecurityScanPage from './Pages/Tools/SecurityScan/SecurityScanPage';
-import IPActivityMonitor from "./Pages/Tools/IPActivity";
 import Login from "./Pages/Users/Login/Login";
 import Register from "./Pages/Users/Register/Register";
 import ForgetPassword from "./Pages/Users/ResetPassword/ForgetPassword";
@@ -161,14 +160,7 @@ const App = () => {
                   </ProtectedRoute>
                 } 
               />
-              <Route 
-                path="/ip-activity" 
-                element={
-                  <ProtectedRoute>
-                    <IPActivityMonitor />
-                  </ProtectedRoute>
-                }
-              />
+
               <Route 
                 path="/security-scanner" 
                 element={
