@@ -135,24 +135,14 @@ const Navbar = () => {
     },
     {
       icon: <Network size={20} />,
-      label: 'Network',
-      path: '/network'
+      label: 'Domain Scan',
+      path: '/security-scanner'
     },
     {
       icon: <BarChart2 size={20} />,
-      label: 'Performance',
-      path: '/performance'
+      label: 'Stress Test',
+      path: '/stress-test'
     },
-    {
-      icon: <Shield size={20} />,
-      label: 'Security',
-      path: '/security'
-    },
-    {
-      icon: <Settings size={20} />,
-      label: 'Settings',
-      path: '/settings'
-    }
   ];
 
   // Get user information, with fallbacks if properties are not available

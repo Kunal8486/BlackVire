@@ -72,7 +72,7 @@ const Dashboard = () => {
           </div>
           <div className="stat-content">
             <h3>Cost Savings</h3>
-            <p className="stat-value">$42.5<span className="stat-unit">k</span></p>
+            <p className="stat-value">42.5<span className="stat-unit">k</span></p>
             <p className="stat-change positive">↑ 12% from last quarter</p>
           </div>
         </div>
